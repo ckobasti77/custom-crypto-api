@@ -62,7 +62,7 @@ const postData = async () => {
 const updateData = async () => {
   try {
     await axios
-      .delete("http://localhost:3001/api/delete-coins")
+      .delete("http://localhost:8080/api/delete-coins")
       .then(() => postData());
     console.log("POST request successful:", response.data);
   } catch (error) {
@@ -75,12 +75,12 @@ const interval = setInterval(updateData, 60000);
 
 mongoose
   .connect(
-    "mongodb+srv://sturgessdouglas:rk8CB7h7WubyH4qu@backend.i6mz5rk.mongodb.net/?retryWrites=true&w=majority&appName=backend"
+    process.env.MONGODB_URI
   )
   .then(() => {
     console.log("Connected to database!");
-    app.listen(3001, () => {
-      console.log("Server is running on port 3001");
+    app.listen(process.env.PORT || 8080, () => {
+      console.log("Server is running on port 8080");
     });
   })
   .catch(() => {
