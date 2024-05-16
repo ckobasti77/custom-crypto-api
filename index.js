@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const axios = require("axios");
@@ -10,23 +11,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // app.use('/api/custom-crypto-api/coins', coinRoute)
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Welcome to Custom Crypto API" });
+});
 
 app.get("/api/custom-crypto-api/coins", async (req, res) => {
   try {
     const queryKey = Object.keys(req.query)[0];
     const queryValue = req.query[queryKey];
 
-
     const sortValue = parseInt(queryValue, 10);
     if (![1, -1].includes(sortValue) && queryKey) {
-      return res.status(400).json({ message: "Invalid sort value: must be 1 or -1" });
+      return res
+        .status(400)
+        .json({ message: "Invalid sort value: must be 1 or -1" });
     }
     const sortObj = { [queryKey]: sortValue };
 
     // Use the sort object to sort the results
-    const coins = queryKey 
-                    ? await Coin.find({}).sort(sortObj)
-                    : await Coin.find({})
+    const coins = queryKey
+      ? await Coin.find({}).sort(sortObj)
+      : await Coin.find({});
 
     res.status(200).json(coins);
   } catch (error) {
@@ -47,6 +52,7 @@ app.delete("/api/custom-crypto-api/coins", async (req, res) => {
 const postData = async () => {
   let data;
 
+  await axios.delete("https://custom-crypto-api.vercel.app/api/custom-crypto-api/coins")
 
   await axios
     .get(
@@ -62,9 +68,10 @@ const postData = async () => {
 const updateData = async () => {
   try {
     await axios
-      .delete("http://localhost:8080/api/delete-coins")
+      .delete(
+        "https://custom-crypto-api.vercel.app/api/custom-crypto-api/coins"
+      )
       .then(() => postData());
-    console.log("POST request successful:", response.data);
   } catch (error) {
     console.error("Error making POST request:", error.message);
   }
@@ -72,11 +79,8 @@ const updateData = async () => {
 
 const interval = setInterval(updateData, 60000);
 
-
 mongoose
-  .connect(
-    process.env.MONGODB_URI
-  )
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connected to database!");
     app.listen(process.env.PORT || 8080, () => {
