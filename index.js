@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const axios = require("axios");
+const cors = require("cors");
 const Coin = require("./models/coin.model.js");
 
 const app = express();
@@ -9,6 +10,7 @@ const app = express();
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 // app.use('/api/custom-crypto-api/coins', coinRoute)
 app.get("/", (req, res) => {
