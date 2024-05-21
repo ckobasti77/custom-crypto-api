@@ -1,5 +1,9 @@
 const { default: axios } = require("axios");
 const { WidgetCoin } = require("../models/widget-coin.model");
+const redis = require('redis');
+
+const client = redis.createClient();
+const lock = promisify(client.set).bind(client);
 
 const getAllWidgetCoins = async (req, res) => {
   const widgetCoins = await WidgetCoin.find({});
@@ -9,6 +13,13 @@ const getAllWidgetCoins = async (req, res) => {
 
 const updateAllWidgetCoins = async () => {
   try {
+    const isLocked = await lock(lockKey, lockValue, 'NX', 'EX', 60); // Lock for 110 seconds
+
+    if (!isLocked) {
+      console.log('Another instance is already running');
+      return;
+    }
+
     console.log(`WIDGET DATA START: ${new Date().toISOString()}`);
 
     await WidgetCoin.deleteMany({});
@@ -22,6 +33,7 @@ const updateAllWidgetCoins = async () => {
   } catch (error) {
     console.error("Error fetching or updating WidgetCoin data:", error);
   } finally {
+    client.del(lockKey);
     console.log(`WIDGET DATA COMPLETION: ${new Date().toISOString()}`);
   }
 };
