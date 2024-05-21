@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 
 const CoinSchema = mongoose.Schema(
   {
-    market_cap_rank: {
-      type: Number,
-      required: false,
-    },
     symbol: {
       type: String,
       required: false,
@@ -18,7 +14,11 @@ const CoinSchema = mongoose.Schema(
       type: String,
       required: false,
     },
-    display: {
+    aliases: {
+      type: String,
+      required: false,
+    },
+    shortname: {
       type: String,
       required: false,
     },
@@ -26,11 +26,11 @@ const CoinSchema = mongoose.Schema(
       type: Number,
       required: false,
     },
-    volume_24_usd: {
+    market_cap_rank: {
       type: Number,
       required: false,
     },
-    last_market_cap_usd: {
+    volume_rank: {
       type: Number,
       required: false,
     },
@@ -78,11 +78,63 @@ const CoinSchema = mongoose.Schema(
       type: Number,
       required: false,
     },
-    ccu_slug: {
+    volume_24_usd: {
+      type: Number,
+      required: false,
+    },
+    display: {
+      type: String,
+      required: false,
+    },
+    trading_since: {
       type: String,
       required: false,
     },
     supply: {
+      type: Number,
+      required: false,
+    },
+    last_update: {
+      type: String,
+      required: false,
+    },
+    ico_end: {
+      type: String,
+      required: false,
+    },
+    include_supply: {
+      type: String,
+      required: false,
+    },
+    use_volume: {
+      type: String,
+      required: false,
+    },
+    growth_all_time: {
+      type: Number,
+      required: false,
+    },
+    ccu_slug: {
+      type: String,
+      required: false,
+    },
+    image_id: {
+      type: String,
+      required: false,
+    },
+    image_t: {
+      type: Number,
+      required: false,
+    },
+    market_cap_usd: {
+      type: Number,
+      required: false,
+    },
+    categories: {
+      type: [Number],
+      required: false,
+    },
+    last_market_cap_usd: {
       type: Number,
       required: false,
     },
@@ -94,10 +146,6 @@ const CoinSchema = mongoose.Schema(
       type: Number,
       required: false,
     },
-    image_id: {
-      type: String,
-      required: false,
-    },
     btc_price: {
       type: Number,
       required: false,
@@ -106,23 +154,7 @@ const CoinSchema = mongoose.Schema(
       type: Number,
       required: false,
     },
-    shortname: {
-      type: String,
-      required: false,
-    },
-    include_supply: {
-      type: String,
-      required: false,
-    },
-    trading_since: {
-      type: Number,
-      required: false,
-    },
     created: {
-      type: Number,
-      required: false,
-    },
-    image_t: {
       type: Number,
       required: false,
     },
@@ -150,10 +182,6 @@ const CoinSchema = mongoose.Schema(
       type: Number,
       required: false,
     },
-    growth_all_time: {
-      type: Number,
-      required: false,
-    },
     first_price_usd: {
       type: Number,
       required: false,
@@ -170,12 +198,16 @@ const CoinSchema = mongoose.Schema(
       type: Number,
       required: false,
     },
+    timestamps: {
+      type: [[Number]],
+      required: false,
+    }
   },
   {
     timestamps: true,
   }
 );
 
-const Product = mongoose.model("Coin", CoinSchema);
+const Coin = mongoose.model("Coin", CoinSchema);
 
-module.exports = Product;
+module.exports = Coin;
