@@ -26,22 +26,14 @@ const WidgetCoinSchema = mongoose.Schema(
       type: Number,
       required: false,
     },
-    image_id: {
-      type: String,
-      required: false,
-    },
-    image_t: {
-      type: Number,
-      required: false,
-    },
-    timestamps: {
-      type: [[Number]],
-      required: false,
-    },
     price_svg: {
       type: String,
       required: false,
     },
+    shortname: {
+      type: String,
+      required: false,
+    }
   },
   {
     timestamps: true,
