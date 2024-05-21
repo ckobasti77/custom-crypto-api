@@ -13,6 +13,9 @@ const getAllWidgetCoins = async (req, res) => {
 };
 
 const updateAllWidgetCoins = async () => {
+  const lockKey = 'updateAllWidgetCoinsLock';
+  const lockValue = 'locked';
+  
   try {
     const isLocked = await lock(lockKey, lockValue, 'NX', 'EX', 60); // Lock for 110 seconds
 
