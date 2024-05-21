@@ -1,6 +1,7 @@
 const { default: axios } = require("axios");
 const { WidgetCoin } = require("../models/widget-coin.model");
 const redis = require('redis');
+const { promisify } = require('util');
 
 const client = redis.createClient();
 const lock = promisify(client.set).bind(client);
