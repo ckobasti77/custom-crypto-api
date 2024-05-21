@@ -27,14 +27,21 @@ app.use('/api/all-coins', coinRoute);
 app.use('/api/widget-coins', widgetCoinRoute);
 app.use('/api/coin-timestamps', coinTimestampsRoute);
 
-cron.schedule('*/2 * * * *', () => {
-  updateAllWidgetCoins();
-  updateAllCoins();
-});
+const twoMinutes = 2 * 60 * 1000;
+const fourHours = 4 * 60 * 60 * 1000;
 
-cron.schedule('0 */4 * * *', () => {
-  updateTimestampsAndGenerateSVG();
-});
+setInterval(updateAllWidgetCoins, twoMinutes);
+setInterval(updateAllCoins, twoMinutes);
+setInterval(updateTimestampsAndGenerateSVG, fourHours);
+
+// cron.schedule('*/2 * * * *', () => {
+//   updateAllWidgetCoins();
+//   updateAllCoins();
+// });
+
+// cron.schedule('0 */4 * * *', () => {
+//   updateTimestampsAndGenerateSVG();
+// });
 
 mongoose
   .connect(process.env.MONGODB_URI)
