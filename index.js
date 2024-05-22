@@ -34,12 +34,10 @@ app.use('/api/coin-timestamps', coinTimestampsRoute);
 // setInterval(updateAllCoins, twoMinutes);
 // setInterval(updateTimestampsAndGenerateSVG, fourHours);
 
-cron.schedule('*/2 * * * *', () => {
+cron.schedule('2 * * * *', () => {
   updateAllWidgetCoins();
-});
-
-cron.schedule('*/2 * * * *', () => {
   updateAllCoins();
+
 });
 
 cron.schedule('0 */1 * * *', () => {

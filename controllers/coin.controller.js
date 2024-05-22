@@ -53,25 +53,25 @@ const getAllCoins = async (req, res) => {
 };
 
 const updateAllCoins = async () => {
-    try {
-      console.log(`ALL COINS DATA START: ${new Date().toISOString()}`);
-  
-      await Coin.deleteMany({});
-  
-      const response = await axios.get(
-        "https://coincodex.com/apps/coincodex/cache/all_coins.json"
-      );
-      const coins = response.data;
-  
-      await Coin.insertMany(coins);
-  
-      console.log("Data synchronization complete");
-    } catch (error) {
-      console.error("Error fetching or updating data:", error);
-    } finally {
-      console.log(`ALL COINS DATA COMPLETION: ${new Date().toISOString()}`);
-    }
-  };
+  try {
+    console.log(`ALL COINS DATA START: ${new Date().toISOString()}`);
+
+    await Coin.deleteMany({});
+
+    const response = await axios.get(
+      "https://coincodex.com/apps/coincodex/cache/all_coins.json"
+    );
+    const coins = response.data;
+
+    await Coin.insertMany(coins);
+
+    console.log("Data synchronization complete");
+  } catch (error) {
+    console.error("Error fetching or updating data:", error);
+  } finally {
+    console.log(`ALL COINS DATA COMPLETION: ${new Date().toISOString()}`);
+  }
+};
 
 const getSingleCoin = async (req, res) => {
   try {
@@ -91,8 +91,6 @@ const deleteAllCoins = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 module.exports = {
   getAllCoins,
