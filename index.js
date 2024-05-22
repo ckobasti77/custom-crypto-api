@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cron = require('node-cron');
+const fs = require("fs");
 const coinRoute = require("./routes/coin.route.js");
 const widgetCoinRoute = require("./routes/widget-coin.route.js");
 const coinTimestampsRoute = require("./routes/coin-timestamps.route.js");
@@ -10,7 +11,6 @@ const { updateAllCoins } = require('./controllers/coin.controller.js');
 const { updateAllWidgetCoins } = require('./controllers/widget-coin.controller.js');
 const { updateTimestampsAndGenerateSVG } = require('./controllers/coin-timestamp.controller.js');
 const { default: axios } = require("axios");
-
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -34,10 +34,23 @@ app.use('/api/coin-timestamps', coinTimestampsRoute);
 // setInterval(updateAllCoins, twoMinutes);
 // setInterval(updateTimestampsAndGenerateSVG, fourHours);
 
-cron.schedule('2 * * * *', () => {
-  updateAllWidgetCoins();
-  updateAllCoins();
-
+fs.readFile('lock.txt', (err, data) => {
+  if (err) {
+    cron.schedule('2 * * * *', () => {
+      updateAllWidgetCoins();
+      updateAllCoins();
+    });
+    console.log("start cronted")
+    fs.writeFile('lock.txt', "true", (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log('Data written to file');
+    });
+  } else {
+    
+  }
 });
 
 cron.schedule('0 */1 * * *', () => {
