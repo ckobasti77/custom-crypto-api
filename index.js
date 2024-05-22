@@ -36,6 +36,9 @@ app.use('/api/coin-timestamps', coinTimestampsRoute);
 
 cron.schedule('*/2 * * * *', () => {
   updateAllWidgetCoins();
+});
+
+cron.schedule('*/2 * * * *', () => {
   updateAllCoins();
 });
 
