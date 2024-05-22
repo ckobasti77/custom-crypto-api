@@ -8,7 +8,6 @@ const getAllWidgetCoins = async (req, res) => {
 };
 
 const updateAllWidgetCoins = async () => {
-
   try {
     console.log(`WIDGET DATA START: ${new Date().toISOString()}`);
 
