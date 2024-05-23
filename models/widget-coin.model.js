@@ -30,7 +30,7 @@ const WidgetCoinSchema = mongoose.Schema(
       type: String,
       required: false,
     },
-    shortname: {
+    icon: {
       type: String,
       required: false,
     }
@@ -42,21 +42,4 @@ const WidgetCoinSchema = mongoose.Schema(
 
 const WidgetCoin = mongoose.model("WidgetCoin", WidgetCoinSchema);
 
-const coinTimestampSchema = new mongoose.Schema({
-  coinId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "WidgetCoin",
-    required: true,
-  },
-  timestamps: [
-    {
-      time: { type: Date, required: true },
-      value_in_usd: { type: Number, required: true },
-      volume_24h_usd: { type: Number, required: true },
-    },
-  ],
-});
-
-const CoinTimestamp = mongoose.model("CoinTimestamp", coinTimestampSchema);
-
-module.exports = { WidgetCoin, CoinTimestamp };
+module.exports = WidgetCoin;

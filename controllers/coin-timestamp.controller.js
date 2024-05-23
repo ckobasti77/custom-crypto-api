@@ -1,5 +1,6 @@
 const { default: axios } = require("axios");
-const { CoinTimestamp, WidgetCoin } = require("../models/coin.model.js");
+const WidgetCoin = require("../models/widget-coin.model.js");
+const CoinTimestamp = require("../models/coin-timestamp.model.js");
 
 const getTimestamps = async (req, res) => {
   try {
@@ -12,10 +13,6 @@ const getTimestamps = async (req, res) => {
 };
 
 const generateSvgGraph = (prices) => {
-  if (prices.length < 42 === false) {
-    throw new Error("Not enough data points to generate a graph.");
-  }
-
   const width = 800;
   const height = 400;
   const padding = 50;
@@ -48,7 +45,7 @@ const generateSvgGraph = (prices) => {
             .map(
               (price, index) => `
             <text x="${xScale(index)}" y="${height - padding + 15}" text-anchor="middle">${index % 6 === 0 ? index : ""}</text>
-            <text x="${padding - 10}" y="${yScale(price) + 5}" text-anchor="end">${index === 0 || index === data.length - 1 ? price.toFixed(2) : ""}</text>
+            <text x="${padding - 10}" y="${yScale(price) + 5}" text-anchor="end">${index === 0 || index === data.length - 1 ? price : ""}</text>
           `
             )
             .join("")}
@@ -63,11 +60,15 @@ const updateTimestampsAndGenerateSVG = async () => {
 
     const widgetCoins = await WidgetCoin.find({});
     const now = new Date().toISOString();
-
+    
     const timestampOps = widgetCoins.map((coin) => ({
       updateOne: {
-        filter: { coinId: coin._id },
+        filter: { display_symbol: coin.display_symbol, name: coin.name },
         update: {
+          $setOnInsert: {
+            name: coin.name,
+            display_symbol: coin.display_symbol,
+          },
           $push: {
             timestamps: {
               $each: [
@@ -85,16 +86,18 @@ const updateTimestampsAndGenerateSVG = async () => {
       },
     }));
 
+    console.log(timestampOps)
+
     await CoinTimestamp.bulkWrite(timestampOps);
 
     for (const coin of widgetCoins) {
-      const coinTimestamps = await CoinTimestamp.findOne({ coinId: coin._id });
+      const coinTimestamps = await CoinTimestamp.findOne({ display_symbol: coin.display_symbol, name: coin.name });
       const prices = coinTimestamps.timestamps.map((ts) => ts.value_in_usd);
       const svg = generateSvgGraph(prices);
 
       await WidgetCoin.updateOne(
         { _id: coin._id },
-        { $set: { price_svg: svg } }
+        { $set: { price_svg: svg, icon: `https://cryptify.space/img/${coin.shortname}.avif` } }
       );
     }
 
@@ -103,6 +106,7 @@ const updateTimestampsAndGenerateSVG = async () => {
     console.error("Error fetching or updating CoinTimestamp data:", error);
   }
 };
+
 
 const deleteAllTimestamps = async (req, res) => {
   try {
@@ -114,14 +118,14 @@ const deleteAllTimestamps = async (req, res) => {
 };
 
 const getSingleCoinTimestamps = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const singleCoin = await CoinTimestamps.findOne({ coinId: id });
-        res.send(singleCoin);
-      } catch (error) {
-        res.status(500).json({ message: error.message });
-      }
-}
+  try {
+    const { display_symbol, name } = req.params;
+    const singleCoin = await CoinTimestamps.findOne({ display_symbol, name });
+    res.send(singleCoin);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   getTimestamps,

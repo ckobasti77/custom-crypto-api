@@ -1,5 +1,5 @@
 const { default: axios } = require("axios");
-const { WidgetCoin } = require("../models/widget-coin.model");
+const WidgetCoin = require("../models/widget-coin.model");
 
 const getAllWidgetCoins = async (req, res) => {
   const widgetCoins = await WidgetCoin.find({});
