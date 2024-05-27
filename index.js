@@ -41,9 +41,9 @@ cron.schedule('*/2 * * * *', () => {
 // updateAllWidgetCoins();
 // updateAllCoins();
 
-// cron.schedule('0 */4 * * *', () => {
-//   updateTimestampsAndGenerateSVG();
-// });
+cron.schedule('0 */4 * * *', () => {
+  updateTimestampsAndGenerateSVG();
+});
 
 // updateTimestampsAndGenerateSVG();
 // updateAllWidgetCoins();
