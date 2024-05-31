@@ -61,40 +61,32 @@ const updateTimestampsAndGenerateSVG = async () => {
     const widgetCoins = await WidgetCoin.find({});
     const now = new Date().toISOString();
     
-    const timestampOps = widgetCoins.map((coin) => ({
-      updateOne: {
-        filter: { display_symbol: coin.display_symbol, name: coin.name },
-        update: {
-          $setOnInsert: {
-            name: coin.name,
-            display_symbol: coin.display_symbol,
-          },
-          $push: {
-            timestamps: {
-              $each: [
-                {
-                  time: now,
-                  value_in_usd: coin.last_price_usd,
-                  volume_24h_usd: coin.volume_24_usd,
-                },
-              ],
-              $slice: -42,
-            },
-          },
-        },
-        upsert: true,
+    const timestampDocs = widgetCoins.map((coin) => ({
+      metadata: {
+        display_symbol: coin.display_symbol,
+        name: coin.name,
       },
+      time: now,
+      value_in_usd: coin.last_price_usd,
+      volume_24h_usd: coin.volume_24_usd,
     }));
 
     console.log(timestampOps)
 
-    await CoinTimestamp.bulkWrite(timestampOps);
+    await CoinTimestamp.insertMany(timestampDocs);
 
     for (const coin of widgetCoins) {
-      const coinTimestamps = await CoinTimestamp.findOne({ display_symbol: coin.display_symbol, name: coin.name });
-      const prices = coinTimestamps.timestamps.map((ts) => ts.value_in_usd);
+      // Query for the timestamps related to this coin
+      const coinTimestamps = await CoinTimestamp.find({
+        'metadata.display_symbol': coin.display_symbol,
+        'metadata.name': coin.name,
+      }).sort({ time: 1 }); // Sort by time in ascending order
+
+      // Extract the prices for generating the SVG graph
+      const prices = coinTimestamps.map((ts) => ts.value_in_usd);
       const svg = generateSvgGraph(prices);
 
+      // Update the WidgetCoin with the generated SVG and icon URL
       await WidgetCoin.updateOne(
         { _id: coin._id },
         { $set: { price_svg: svg, icon: `https://cryptify.space/img/${coin.shortname}.avif` } }
